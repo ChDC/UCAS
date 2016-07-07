@@ -412,8 +412,8 @@ def test():
 if __name__ == "__main__":
     oldCd = os.getcwd()
     os.chdir(path.dirname(path.abspath(__file__)))
-    # try:
-    main()
-    #except Exception as e:
-    #    showMessage('出错', '错误信息：' + str(e))
+    try:
+        main()
+    except Exception as e:
+        showMessage('出错', '错误信息：' + str(e))
     os.chdir(oldCd)
