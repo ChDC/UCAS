@@ -91,9 +91,9 @@ $ pythonw LoginUCASNetwork.py -s
 这些账号是从 UCAS 官网的通知中的奖学金公示目录中截取的。然后把它们一行一个账号存放到 UCASAccounts.data 中，然后执行下面的命令进行筛选，把密码不是`ucas`的账号剔除出去：
 
 ```shell
-$ pythonw LoginUCASNetwork.py -a filter
+$ python LoginUCASNetwork.py -a filter
 ```
 
 ## 声明
 
-使用本程序的同学们，为了大家都能愉快的上网，请不要修改账号列表中的密码。谢谢！
+使用本程序的同学们，为了大家都能愉快的上网，**请不要修改账号列表中账号的密码**。谢谢！
