@@ -6,14 +6,18 @@ import logging
 import re
 import time
 import json
-from logging import debug as d
+from logging import debug
 import collections
+import tempfile
 from multiprocessing.dummy import Pool
 
 import requests
 from bs4 import BeautifulSoup
 
 # logging.basicConfig(filename='UCAS.log', level=logging.DEBUG)
+
+# logging.basicConfig(level=logging.DEBUG)
+
 
 BeautifulSoupDefaultParser = 'lxml'
 
@@ -59,6 +63,7 @@ class Course:
     @property
     def resourceList(self):
         """获取课件列表"""
+
         courseId = self.url.split('/')[-1]
         resUrl = "http://course.ucas.ac.cn/access/content/group/{0}/".format(courseId)
         return self.__getCourseResourceList(resUrl, directory=self.name)
@@ -238,6 +243,17 @@ class UCAS:
         self.__courses = None
         self.__userInfo = None
 
+    def getCaptcha(self):
+        """获取验证码"""
+        url = 'http://sep.ucas.ac.cn/changePic'
+        r = self.session.get(url)
+        if not r.ok:
+            return None
+        file = tempfile.mktemp('.png')
+        with open(file, 'wb') as fh:
+            fh.write(r.content)
+        return file
+
     def login(self, username, password):
         """登录UCAS"""
 
@@ -245,8 +261,17 @@ class UCAS:
         loginUrl = 'http://sep.ucas.ac.cn/slogin'
 
         self.session.get(hostUrl)
+
+        print("Loading captcha...")
+        file = self.getCaptcha()
+        if os.name == 'posix':
+            os.system('open ' + file)
+
+        certCode = input("Please input the captcha in file %s: \n" % file)
+
         data = {'userName': username,
                 'pwd': password,
+                'certCode': certCode,
                 'sb': 'sb'}
         result = self.session.post(loginUrl, data=data)
         rr = BeautifulSoup(result.text, BeautifulSoupDefaultParser).find('div', class_='alert alert-error')
@@ -384,9 +409,10 @@ def downloadAll(session, downloadTasks, reportProgress=None, threadCount=4):
 
 def reportDownloadProgress(localFile, fileSize, hasRead, speed):
     """用于输出下载信息的函数"""
-    print('{}({}%): {}KB/{}KB {}KB/s'.format(os.path.split(localFile)[1],
-                                             int(hasRead / fileSize * 100), int(hasRead / 1024), int(fileSize / 1024),
-                                             int(speed / 1024)))
+    if fileSize != 0:
+        print('{}({}%): {}KB/{}KB {}KB/s'.format(os.path.split(localFile)[1],
+                                                 int(hasRead / fileSize * 100), int(hasRead / 1024), int(fileSize / 1024),
+                                                 int(speed / 1024)))
 
 
 def main():
@@ -428,8 +454,10 @@ def main():
         raise Exception(error)
     courseList = ucas.getMatchedCourses(*args) if len(args) > 0 else ucas.getCoursesOfCurrentTerm()
     if opts.action == 'sync':
+        debug(courseList)
         downloadList = Course.getSyncResourceListOfCourses(courseList, syncDir,
                                                            opts.blacklist.splits() if opts.blacklist else None)
+
         if len(downloadList) > 0:
             print('需要下载的资源列表如下：')
             for c, rs in downloadList:
@@ -471,6 +499,7 @@ class NoConfigFileException(Exception):
 
 
 def test():
+    from pprint import pprint as pp
     ucas = UCAS()
     r, error = ucas.login('chendacai@qq.com', 'wenWEN6813')
     c = ucas.getMatchedCourses('图像处理')[0]
@@ -480,6 +509,7 @@ def test():
     # ss = c.homework
     from pprint import pprint as pp
     pp(ss)
+
 
 if __name__ == '__main__':
 
