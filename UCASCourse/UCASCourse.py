@@ -501,7 +501,7 @@ class NoConfigFileException(Exception):
 def test():
     from pprint import pprint as pp
     ucas = UCAS()
-    r, error = ucas.login('chendacai@qq.com', 'wenWEN6813')
+    r, error = ucas.login('chendacai@qq.com', 'testtest')
     c = ucas.getMatchedCourses('图像处理')[0]
     ss = c.getMatchedStudents('2015[e2]80133', '陈')
 
