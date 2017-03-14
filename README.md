@@ -16,7 +16,7 @@
   * 显示课程的作业列表
   * 下载作业中的附件
 
-下载即详细介绍：<https://github.com/ChDC/UCAS/tree/master/UCASCourse>
+下载及详细介绍：<https://github.com/ChDC/UCAS/tree/master/UCASCourse>
 
 ## LoginUCASNetwork: 登录校园网用的小程序
 
@@ -26,4 +26,4 @@
 * 使用配置文件中的账号进行登录
 * 保持在线模式，也就是说每隔一段时间检查一次当前是否在线，如果不在线就登录
 
-下载即详细介绍：<https://github.com/ChDC/UCAS/tree/master/LoginUCASNetwork>
+下载及详细介绍：<https://github.com/ChDC/UCAS/tree/master/LoginUCASNetwork>
